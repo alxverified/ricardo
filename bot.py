@@ -2,6 +2,11 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler
 import requests
 import os
+import logging
+
+# Configurar el registro de logs
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
 # Función para el comando /dni
 async def dni(update: Update, context):
@@ -39,19 +44,21 @@ async def dni(update: Update, context):
 async def main():
     # Token del bot
     token = os.getenv("TELEGRAM_BOT_TOKEN")
+    if not token:
+        raise ValueError("El token del bot no está configurado en las variables de entorno.")
 
-    # Crear aplicación de Telegram
+    # Crear la aplicación de Telegram
     application = Application.builder().token(token).build()
 
-    # Añadir comando /dni
+    # Añadir el manejador de comando /dni
     application.add_handler(CommandHandler("dni", dni))
 
     # Imprimir que el bot se ha iniciado
-    print("Bot Iniciado")
+    logging.info("Bot Iniciado")
 
     # Ejecutar el bot
     await application.start()
-    await application.stop()
+    await application.idle()
 
 if __name__ == '__main__':
     import asyncio
